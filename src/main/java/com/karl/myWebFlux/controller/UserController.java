@@ -4,6 +4,7 @@ import com.karl.myWebFlux.domain.User;
 import com.karl.myWebFlux.respository.UserRepository;
 import com.karl.myWebFlux.utils.CheckUtils;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 /**
  * @Description: DESC
  * @Author: zhouzhi96
  * @Date: 2023年08月04日: 13:59
  */
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -34,7 +38,12 @@ public class UserController {
      * @date 2023/8/4 15:43
      */
     @GetMapping("/all")
-    public Flux<User> getAll(){
+    public Flux<User> getAll(@RequestHeader Map<String, String> headers){
+        log.info("getall");
+        headers.forEach((key, value) -> {
+            // 日志中输出所有请求头
+            log.info(String.format("Header '%s' = %s", key, value));
+        });
         return userRepository.findAll();
     }
 
@@ -47,6 +56,7 @@ public class UserController {
      */
     @GetMapping(value="/stream/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<User> streamGetAll(){
+
         return userRepository.findAll();
     }
 
